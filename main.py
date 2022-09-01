@@ -68,6 +68,24 @@ def generate_password():
     input_password.insert(0, password)
     pyperclip.copy(password) # copy it to clipboard
 
+def search_website():
+    website = input_website.get()
+    if website:
+        try:
+            with open(FILE, "r") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            messagebox.showinfo(title="Data File Not Found", message="Not data file found.")
+        else:
+            if website in data:
+                email = data[website]["email"]
+                password = data[website]["password"]
+                messagebox.showinfo(title="Website Found", message=f"Email: {email}\nPassword:{password}")
+            else:
+                messagebox.showinfo(title="Website Not Found", message=f"Not any data related to {website}.")
+    else:
+        messagebox.showinfo(title="Error", message="Please enter a website name you're searching for.")
+
 
 label_website = Label(text="Website", bg="white")
 label_website.grid(row=1, column=0)
@@ -78,8 +96,8 @@ label_email.grid(row=2, column=0)
 label_password = Label(text="Password", bg="white")
 label_password.grid(row=3, column=0)
 
-input_website = Entry(width=40, highlightthickness=2)
-input_website.grid(row=1, column=1, columnspan=2, pady=10)
+input_website = Entry(width=30, highlightthickness=2)
+input_website.grid(row=1, column=1, pady=10)
 input_website.focus()
 
 input_email = Entry(width=40, highlightthickness=2)
@@ -88,6 +106,9 @@ input_email.insert(0, "example@example.com")
 
 input_password = Entry(width=30, highlightthickness=2)
 input_password.grid(row=3, column=1, pady=10)
+
+button_search = Button(text="Search", bg="white", width=7, command=search_website)
+button_search.grid(row=1, column=2)
 
 button_generate_password = Button(text="Generate", width=7, bg="white", command=generate_password)
 button_generate_password.grid(row=3, column=2)

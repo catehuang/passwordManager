@@ -2,9 +2,10 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
+import json
 
 FONT = "Courier"
-FILE = "data.txt"
+FILE = "data.json"
 
 window = Tk()
 window.title("Password Manager")
@@ -19,6 +20,12 @@ def save_to_file():
     website = input_website.get()
     email = input_email.get()
     password = input_password.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
     if not website or not email or not password:
         messagebox.showinfo(title="Oops", message="Please make sure you haven't left any fields empty.")
@@ -27,10 +34,20 @@ def save_to_file():
                          f"\nWebsite: {website}\nEmail: {email}\nPassword: {password}")
 
         if is_ok:
-            with open(FILE, "a") as file:
-                file.write(f"{website} | {email} | {password}\n")
-            input_website.delete(0, END)
-            input_password.delete(0, END)
+            try:
+                with open(FILE, "r") as file:
+                    data = json.load(file)
+            except FileNotFoundError:
+                print("File doesn't exist. Create file")
+                with open(FILE, "w") as file:
+                    json.dump(new_data, file, indent=4)
+            else:
+                data.update(new_data)
+                with open(FILE, "w") as file:
+                    json.dump(data, file, indent=4)
+            finally:
+                input_website.delete(0, END)
+                input_password.delete(0, END)
 
 
 def generate_password():
